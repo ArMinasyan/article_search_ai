@@ -4,9 +4,16 @@ const express = require('express');
 const app = express();
 
 const { ChatOllama } = require('@langchain/ollama');
+const { ChatOpenAI} = require('@langchain/openai');
 
-const model = new ChatOllama({
-  model: 'gemma3:270m',
+
+// const model = new ChatOllama({
+//   model: 'gemma3:270m',
+//   temperature: 0,
+// });
+
+const model = new ChatOpenAI({
+  model: 'gpt-5.4-mini',
   temperature: 0,
 });
 
