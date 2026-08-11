@@ -3,41 +3,43 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 
-const { ChatOllama } = require('@langchain/ollama');
-const { ChatOpenAI} = require('@langchain/openai');
+const { ChatGoogleGenerativeAI } = require('@langchain/google-genai');
+const { createAgent, HumanMessage } = require('langchain');
+const jobSchema = require('./schemas/job.schema');
+const { TavilySearch } = require('@langchain/tavily');
+const MODEL_NAME = 'gemini-3.5-flash';
 
-
-// const model = new ChatOllama({
-//   model: 'gemma3:270m',
-//   temperature: 0,
-// });
-
-const model = new ChatOpenAI({
-  model: 'gpt-5.4-mini',
+const model = new ChatGoogleGenerativeAI({
+  model: MODEL_NAME,
   temperature: 0,
+});
+
+const { z } = require('zod');
+
+const jobListSchema = z.object({
+  jobs: z.array(jobSchema).describe('List of job listings matching the search query'),
+});
+
+const agent = createAgent({
+  model,
+  tools: [TavilySearch],
+  name: 'search',
+  description: `Used model: ${MODEL_NAME}`,
+  responseFormat: jobListSchema,
 });
 
 
 app.use(express.json());
 
-app.post('/ask', async (req, res) => {
-  const message = req.body?.message;
-  if (typeof message !== 'string' || message.trim() === '') {
-    return res.status(400).json({ error: 'Request body must include a non-empty "message" string.' });
-  }
+app.post('/find-job', async (req, res) => {
+  const { message } = req.body;
+  const result = await agent.invoke({
+    messages: [new HumanMessage(message)],
+  });
 
-  try {
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    const response = await model.invoke(message);
-    const content = typeof response.content === 'string'
-      ? response.content
-      : JSON.stringify(response.content);
-
-    res.end(content);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to process request.' });
-  }
+  res.json({
+    response: result.structuredResponse?.jobs ?? result.structuredResponse,
+  });
 });
 
 const port = Number(process.env.PORT) || 8080;
