@@ -67,14 +67,6 @@ package.json          Dependencies and npm start command
 readme.md             Setup and usage documentation
 ```
 
-## Configuration and Limitations
-
-- **Model:** `main.js` currently selects `qwen/qwen3.8-27b`. If Groq rejects this identifier or it is unavailable to your account, replace it with an available Groq model that supports tool calling.
-- **Output:** A Zod schema and `structuredModel` are defined, but the agent uses the base `model`. The final answer is therefore not guaranteed to be schema-validated JSON.
-- **History:** Each invocation creates a new agent execution; conversations are not persisted between runs.
-- **Privacy:** Input is sent to Groq, and model-generated search queries may be sent to Wikipedia or DuckDuckGo. Avoid submitting confidential information.
-- **Accuracy:** Search results and model responses can be incomplete or incorrect. Verify important claims against their sources.
-
 ## License
 
 The package declares the ISC license.
