@@ -37,12 +37,6 @@ npm install --legacy-peer-deps
 Pass the complete input as one quoted argument:
 
 ```bash
-npm start -- "Research Node.js and summarize its main uses, citing sources."
-```
-
-Or run the entry point directly:
-
-```bash
 node main.js "Node.js is an open-source JavaScript runtime built on the V8 engine."
 ```
 
