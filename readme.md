@@ -75,16 +75,6 @@ readme.md             Setup and usage documentation
 - **Privacy:** Input is sent to Groq, and model-generated search queries may be sent to Wikipedia or DuckDuckGo. Avoid submitting confidential information.
 - **Accuracy:** Search results and model responses can be incomplete or incorrect. Verify important claims against their sources.
 
-## Troubleshooting
-
-| Issue | Action |
-| --- | --- |
-| Missing Groq API key or authentication failure | Set `GROQ_API_KEY` in the project-root `.env` file and verify the key is valid. |
-| `Cannot find module 'duck-duck-scrape'` | Run `npm install` to restore the declared search dependency. |
-| DuckDuckGo reports an anomaly or rate limit | Wait before retrying. DuckDuckGo may block automated requests even when the tool is configured correctly. |
-| Wikipedia or search network errors | Check connectivity and service availability. |
-| Missing article argument | Supply one quoted argument, for example `npm start -- "Research Node.js"`. |
-
 ## License
 
 The package declares the ISC license.
