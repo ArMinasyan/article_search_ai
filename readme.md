@@ -2,7 +2,7 @@
 
 A Node.js command-line research assistant built with LangChain and Groq. Provide article text or a research topic, and the agent can consult Wikipedia and DuckDuckGo before producing its response.
 
-The prompt asks for the article's topic, summary, source, and tools used. The program prints the agent's final answer to the terminal.
+The prompt asks for the article's topic, summary, source, and tools used. The program validates the agent's final answer against a Zod schema and prints it as formatted JSON. Invalid responses are reported as errors.
 
 ## Requirements
 

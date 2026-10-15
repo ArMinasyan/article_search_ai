@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const { ChatGroq } = require('@langchain/groq');
 const { ChatPromptTemplate } = require('@langchain/core/prompts');
-const { JsonOutputParser, StructuredOutputParser } = require('@langchain/core/output_parsers');
+const { StructuredOutputParser } = require('@langchain/core/output_parsers');
 const { z } = require('zod');
 const { createToolCallingAgent, AgentExecutor } = require("@langchain/classic/agents");
 
@@ -16,13 +16,15 @@ const schema =z.object({
 })
 
 
+const parser = StructuredOutputParser.fromZodSchema(schema);
+
 const model = new ChatGroq({
     model: 'qwen/qwen3.8-27b',
   }),
-  structuredModel = model.withStructuredOutput(schema),
   prompt = ChatPromptTemplate.fromMessages([
     ['system', `You are a research assistant that extracts information from articles.
-                Extract the following information from the article: topic, summary, source, and tools used.` ],
+                Extract the following information from the article: topic, summary, source, and tools used.
+                {format_instructions}` ],
     ['human', 'Here is the article: {article}'],
     ['placeholder', '{agent_scratchpad}']
   ])
@@ -46,16 +48,20 @@ async function main(){
   const executor = new AgentExecutor({
     agent,
     tools,
-    verbose: false
+    verbose: false,
   })
 
  const response = await executor.invoke({
-    article: process.argv[2]
+    article,
+    format_instructions: parser.getFormatInstructions(),
   })
 
-  console.log(response.output)
+  const result = await parser.parse(response.output);
+
+  console.log(result);
 }
 
-main().then(() => {
-
-})
+main().catch((error) => {
+  console.error('Article research failed:', error);
+  process.exitCode = 1;
+});
